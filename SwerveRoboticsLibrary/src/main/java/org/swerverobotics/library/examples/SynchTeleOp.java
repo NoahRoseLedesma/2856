@@ -2,14 +2,19 @@ package org.swerverobotics.library.examples;
 
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.*;
+
+import org.firstinspires.ftc.robotcore.external.Func;
 import org.swerverobotics.library.*;
 import org.swerverobotics.library.interfaces.*;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 /**
  * An example of a synchronous opmode that implements a simple drive-a-bot. 
  */
 
-@TeleOp(name="TeleOp (sync)", group="Swerve Examples")
+@TeleOp(name="TeleOp (Synch)", group="Swerve Examples")
 @Disabled
 public class SynchTeleOp extends SynchronousOpMode
     {
@@ -28,9 +33,10 @@ public class SynchTeleOp extends SynchronousOpMode
 
         // Configure the knobs of the hardware according to how you've wired your
         // robot. Here, we assume that there are no encoders connected to the motors,
-        // so we inform the motor objects of that fact.
-        this.motorLeft.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-        this.motorRight.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+        // so we inform the motor objects of that fact so they drive well. We might still *read*
+        // the controllers in telemetry, just for fun, but that won't be used for logic purposes.
+        this.motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        this.motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // One of the two motors (here, the left) should be set to reversed direction
         // so that it can take the same power level values as the other motor.
@@ -118,34 +124,55 @@ public class SynchTeleOp extends SynchronousOpMode
     
     void configureDashboard()
         {
-        // Configure the dashboard. Here, it will have one line, which will contain three items
-        this.telemetry.addLine
-            (
-            this.telemetry.item("left:", new IFunc<Object>()
+        // Configure the dashboard.
+        this.telemetry.addLine()
+            .addData("left: power: ", new Func<Object>()
                 {
                 @Override public Object value()
                     {
                     return format(motorLeft.getPower());
                     }
-                }),
-            this.telemetry.item("right: ", new IFunc<Object>()
+                })
+            .addData("position: ", new Func<Object>()
                 {
                 @Override public Object value()
                     {
-                    return format(motorLeft.getPower());
+                    return format(motorLeft.getCurrentPosition());
                     }
-                }),
-            this.telemetry.item("mode: ", new IFunc<Object>()
+                }
+            );
+        this.telemetry.addLine()
+            .addData("right: power: ", new IFunc<Object>()
+                {
+                @Override public Object value()
+                    {
+                    return format(motorRight.getPower());
+                    }
+                })
+            .addData("position: ", new IFunc<Object>()
+                {
+                @Override public Object value()
+                    {
+                    return format(motorRight.getCurrentPosition());
+                    }
+                }
+            );
+        this.telemetry.addLine()
+            .addData("mode: ", new IFunc<Object>()
                 {
                 @Override public Object value()
                     {
                     return motorLeft.getMode();
                     }
-                })
+                }
             );
         }
 
     // Handy functions for formatting data for the dashboard
+    String format(int i)
+        {
+        return String.format("%d", i);
+        }
     String format(double d)
         {
         return String.format("%.1f", d);

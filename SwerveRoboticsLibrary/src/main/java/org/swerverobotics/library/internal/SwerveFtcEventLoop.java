@@ -1,12 +1,15 @@
 package org.swerverobotics.library.internal;
 
+import android.app.Activity;
 import android.content.Context;
 import com.qualcomm.ftccommon.FtcEventLoop;
 import com.qualcomm.ftccommon.FtcEventLoopHandler;
+import com.qualcomm.ftccommon.ProgrammingModeController;
 import com.qualcomm.ftccommon.UpdateUI;
 import com.qualcomm.hardware.HardwareFactory;
 import com.qualcomm.robotcore.eventloop.EventLoopManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
+import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerImpl;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -26,48 +29,32 @@ public class SwerveFtcEventLoop extends FtcEventLoop
     //----------------------------------------------------------------------------------------------
 
     protected SwerveOpModeManager swerveOpModeManager;
-    protected EventLoopManager    eventLoopManager;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public SwerveFtcEventLoop(HardwareFactory hardwareFactory, OpModeRegister register, UpdateUI.Callback callback, Context robotControllerContext)
+    public SwerveFtcEventLoop(HardwareFactory hardwareFactory, OpModeRegister register, UpdateUI.Callback callback, Activity robotControllerContext, ProgrammingModeController programmingModeController)
         {
-        super(hardwareFactory, register, callback, robotControllerContext);
-        setEventLoopManager();
+        super(hardwareFactory, register, callback, robotControllerContext, programmingModeController);
         }
 
     @Override
-    protected OpModeManager createOpModeManager()
+    protected OpModeManagerImpl createOpModeManager()
         {
-        this.swerveOpModeManager = new SwerveOpModeManager(new HardwareMap(this.robotControllerContext));
+        this.swerveOpModeManager = new SwerveOpModeManager(this.activityContext, new HardwareMap(this.activityContext));
         return this.swerveOpModeManager;
-        }
-
-    void setEventLoopManager()
-        {
-        if (null == this.eventLoopManager)
-            this.eventLoopManager = this.ftcEventLoopHandler.getEventLoopManager();
         }
 
     //----------------------------------------------------------------------------------------------
     // Operations
     //----------------------------------------------------------------------------------------------
 
-    public EventLoopManager getEventLoopManager()
-        {
-        return this.eventLoopManager;
-        }
-
     @Override public void loop() throws RobotCoreException
     // Hook this so that we will have thread context set whenever we're running user
-    // code on the loop() thread
+    // code on the loop() thread. (Note: might no longer strictly be necessary.)
         {
         SwerveThreadContext context = SwerveThreadContext.createIfNecessary();
-        context.swerveFtcEventLoop = this;
-        setEventLoopManager();
-        //
         super.loop();
         }
 

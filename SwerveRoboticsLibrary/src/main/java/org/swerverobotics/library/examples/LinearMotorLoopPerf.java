@@ -1,6 +1,8 @@
 package org.swerverobotics.library.examples;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.*;
 import org.swerverobotics.library.*;
@@ -13,7 +15,7 @@ import org.swerverobotics.library.interfaces.*;
  * two motors, named "motorLeft" and "motorRight" that are mounted on the
  * same motor controller.
  */
-@TeleOp(name="Motor Perf (linear)", group="Swerve Examples")
+@TeleOp(name="Motor Perf (Linear)", group="Swerve Examples")
 @Disabled
 public class LinearMotorLoopPerf extends LinearOpMode
     {
@@ -49,7 +51,7 @@ public class LinearMotorLoopPerf extends LinearOpMode
             int position = leftMotor.getCurrentPosition();
 
             long loopCount = this.loopCounter.getLoopCount() - loopCountStart;
-            double ms = elapsed.time() * 1000;
+            double ms = elapsed.milliseconds();
 
             if (gamepad1.left_bumper)
                 leftMotor.setPower(0.5);
@@ -64,7 +66,7 @@ public class LinearMotorLoopPerf extends LinearOpMode
             telemetry.addData("ms/loop",       String.format("%.1f ms", ms / loopCount));
 
             spinCount++;
-            Thread.yield();
+            this.idle();
             }
         }
     }

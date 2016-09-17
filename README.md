@@ -1,15 +1,35 @@
 # Swerve Robotics FTC Library
 
+*Note: new use of the Swerve Robotics Library is not recommended, as nearly all the functionality provided
+therein has been folded into the core FTC SDK. For those returning here from last year, welcome!*
+
 Welcome to the Swerve Robotics library for the FTC robot controller runtime.
-The purpose of our library is to augment the robot controller runtime library from FTC HQ
-in order to simplify programming for FTC teams. The central aim here is not to change what's there,
+The original purpose of our library was to augment the robot controller runtime library from FTC HQ
+in order to simplify programming for FTC teams. Over the course of the 2015-16 season, we implemented
+a considerable amount of functionality that aided in that endeavor. However, during that
+season and through the subsequent summer, virtually all of that functionality was incorporated
+into the core FTC SDK. As of this writing, 5 Sept 2016, the only tiny remaining pieces are the 
+gated gamepad updates, and a very small enhancement to color sensors (which are likely no 
+longer needed).
+
+Accordingly, for the time being at least, the Swerve Robotics library is  being mothballed. 
+
+Thank you for your support and feedback. It was much appreciated.
+
+## Archive
+
+The remainder of this readme is of historical interest only.
+
+The central aim here is not to change what's there,
 just to make it better. The library is a drop-in replacement: if your code works with the FTC HQ
 release, it will work with the Swerve library, but you can also take advantage of new things.
-Please consult the [GitHub release notes](https://github.com/SwerveRobotics/ftc_app/releases) 
+**Please** consult the [GitHub release notes](https://github.com/SwerveRobotics/ftc_app/releases)
 for details regarding a given release. You might also want to check out our related project, the 
 Swerve Robotics Tools Suite, also [here](https://github.com/SwerveRobotics/tools) on GitHub. 
 
-Notable features of the Swerve Robotics FTC Library include the following.
+Notable features of the Swerve Robotics FTC Library include the following. Note: the 'Easy' controllers
+are now part of the core SDK. The functionality is as described here, but they are now *always*
+in use, irrespective of the flavor of opmode.
 
 ### Easy Legacy Motor Controller
 **EasyLegacyMotorController** is a replacement for the stock DCMotorController implementation
@@ -18,10 +38,6 @@ switch motors from read mode to write mode and back again and the attendant comp
 loop counting, or waiting for hardware cycles that that requires. Just call `setPower()`, `getPosition()`,
 or whatever other motor methods you need to use, and the right things happen under the covers.
 
-EasyLegacyMotorController can be used from any OpMode, or indeed any thread. In SynchronousOpModes, 
-EasyLegacyMotorController is used automatically; in other OpModes it can be used by calling 
-`ClassFactory.createEasyMotorController()`.
- 
 ### Easy Modern Motor & Servo Controller and Easy Legacy Servo Controller
 In a conceptually similar way, alternate implementations for modern motor and servo controllers and
 for legacy servo controllers is also provided. The API simplifications for these controllers are less dramatic
@@ -33,11 +49,7 @@ of that change. You don't have to poll to see whether the mode change has taken 
 and then immediately change to run with encoders? Perfectly fine. It just works. Additionally, a handful 
 of bug fixes is included. For example, `Servo.getPosition()` is now functionally useful.
  
-These easy controllers can be used from any OpMode or any thread. In SynchronousOpModes, they are used
-automatically; in other OpModes, they can be used by calling `ClassFactory.createEasyMotorController()`
-or `ClassFactory.createEasyServoController()` respectively.
-
-### Alternate OpMode Registration 
+### Alternate OpMode Registration
 The library has an **alternate OpMode registration mechanism** (the old `FtcOpModeRegister.register()` still works too)
 that allows you to register your own OpModes simply by decorating them with `@TeleOp` or `@Autonomous` annotations.
 This helps promote clean living and easier integration of library updates over time by avoiding
@@ -73,17 +85,15 @@ soon as possible. The enhanced telemetry class can be used both by synchronous a
 opmodes, but is used automatically in SynchronousOpModes.
 
 ### Easy I2C Programming
-The library contains an **I2cDeviceClient** class that wraps I2cDevice instances and makes them easy to use by handling
-read-vs-write mode switches and attendant waits automatically and transparently. Just call `read8()`
-or `write8()` (and friends) to read and write device registers and the rest is taken care of.
-With the I2C register map you get from the sensor manufacturer in hand, it's now just dead easy to
-write your own code to talk to new I2C devices. Note that I2cDeviceClient is also decoupled
-from SynchronousOpMode, in that one need not be using SynchronousOpMode to use I2cDeviceClient.
-However as some operations are lengthy, a worker thread is suggested in that case in order to avoid
-long-running operations on the `loop()` thread.
+The library (indeed, now the core SDK) contains an **I2cDeviceSynch** class that wraps I2cDevice instances
+and makes them easy to use by handling read-vs-write mode switches and attendant waits automatically and
+transparently. Just call `read8()` or `write8()` (and friends) to read and write device registers and the
+rest is taken care of. With the I2C register map you get from the sensor manufacturer in hand, it's now
+just dead easy to write your own code to talk to new I2C devices. I2cDeviceSynch can be used from any
+flavor of OpMode.
 
 ### AdaFruit IMU Support
-The library contains a class that is built on I2cDeviceClient that provides a semantic interface to the **Bosch BNO055 absolute
+The library contains a class that is built on I2cDeviceSynch that provides a semantic interface to the **Bosch BNO055 absolute
 position sensor**, allowing teams to make easy use of the [AdaFruit inertial motion unit (IMU)](http://www.adafruit.com/products/2472)
 which incorporates that sensor module. Features of this sensor include a gyro that does rate
 integration in hardware to provide robust and accurate angular position indications, and a
@@ -137,9 +147,14 @@ Migrating from LinearOpMode to SyncronousOpMode is easy, usually simply involvin
 * optionally removing `waitOneFullHardwareCycle()` calls, as they are no longer necessary
 
 The Swerve Library now appears to be quite stable and functional. Our own teams are actively
-developing their competition code using it. It currently is synchronized to the release from
-FTC HQ that was published January 4th, 2016 (version 1.5). Please be sure to **update your driver station**
-app to the latest-available version.
+developing their competition code using it. It currently is synchronized to the beta release from
+FTC HQ that was published in March, 2016 (version 1.7).
+
+Please be sure to **update your driver station** app to the latest-available version by side-loading
+the .APK from the doc\apk directory. Side loading can be accomplished by any of several means. See
+the ADB command 'install' command, for example (ADB is found in the Android SDK). Alternately, any
+of several PC applications (such as http://apkinstaller.com/) and Android APK Installer apps (found
+in the Play Store) can be used. The thread here (http://ftcforum.usfirst.org/showthread.php?6101-FTC-Beta-Branch&p=24750#post24750) might also be helpful.
 
 ## Installing the Library
 
@@ -186,6 +201,132 @@ Documentation for the FTC SDK are included with this repository.  There is a sub
 For technical questions regarding the SDK, please visit the FTC Technology forum:
 
   http://ftcforum.usfirst.org/forumdisplay.php?156-FTC-Technology
+
+
+**************************************************************************************
+
+Version 2.10 (released on 16.09.03)
+ * Support for Adafruit IMU.
+ * Improvements to ModernRoboticsI2cGyro class
+    - Block on reset of z axis.
+    - isCalibrating() returns true while gyro is calibration.
+ * Updated sample gyro program.
+ * Blockly enhancements
+    - support for android.graphics.Color.
+    - added support for ElapsedTime.
+    - improved look and legibility of blocks.
+    - support for compass sensor.
+    - support for ultrasonic sensor.
+    - support for IrSeeker.
+    - support for LED.
+    - support for color sensor.
+    - support for CRServo
+    - prompt user to configure robot before using programming mode.
+ * Provides ability to disable audio cues.
+ * various bug fixes and improvements.
+
+**************************************************************************************
+
+Version 2.00 (released on 16.08.19)
+ * This is the new release for the upcoming 2016-2017 FIRST Tech Challenge Season.
+ * Channel change is enabled in the FTC Robot Controller app for Moto G 2nd and 3rd Gen phones.
+ * Users can now use annotations to register/disable their Op Modes.
+ * Changes in the Android SDK, JDK and build tool requirements (minsdk=19, java 1.7, build tools 23.0.3).
+ * Standardized units in analog input.
+ * Cleaned up code for existing analog sensor classes.
+ * setChannelMode and getChannelMode were REMOVED from the DcMotorController class.  This is important - we no longer set the motor modes through the motor controller.
+ * setMode and getMode were added to the DcMotor class.  
+ * ContinuousRotationServo class has been added to the FTC SDK.
+ * Range.clip() method has been overloaded so it can support this operation for int, short and byte integers.
+ * Some changes have been made (new methods added) on how a user can access items from the hardware map.
+ * Users can now set the zero power behavior for a DC motor so that the motor will brake or float when power is zero.
+ * Prototype Blockly Programming Mode has been added to FTC Robot Controller.  Users can place the Robot Controller into this mode, and then use a device (such as a laptop) that has a Javascript enabled browser to write Blockly-based Op Modes directly onto the Robot Controller.
+ * Users can now configure the robot remotely through the FTC Driver Station app.
+ * Android Studio project supports Android Studio 2.1.x and compile SDK Version 23 (Marshmallow).
+ * Vuforia Computer Vision SDK integrated into FTC SDK.  Users can use sample vision targets to get localization information on a standard FTC field.
+ * Project structure has been reorganized so that there is now a TeamCode package that users can use to place their local/custom Op Modes into this package.
+ * Inspection function has been integrated into the FTC Robot Controller and Driver Station Apps (Thanks Team HazMat… 9277 & 10650!).
+ * Audio cues have been incorporated into FTC SDK.
+ * Swap mechanism added to FTC Robot Controller configuration activity.  For example, if you have two motor controllers on a robot, and you misidentified them in your configuration file, you can use the Swap button to swap the devices within the configuration file (so you do not have to manually re-enter in the configuration info for the two devices).
+ * Fix mechanism added to all user to replace an electronic module easily.  For example, suppose a servo controller dies on your robot. You replace the broken module with a new module, which has a different serial number from the original servo controller.  You can use the Fix button to automatically reconfigure your configuration file to use the serial number of the new module.
+ * Improvements made to fix resiliency and responsiveness of the system.
+ * For LinearOpMode the user now must for a telemetry.update() to update the telemetry data on the driver station.  This update() mechanism ensures that the driver station gets the updated data properly and at the same time.
+ * The Auto Configure function of the Robot Controller is now template based.  If there is a commonly used robot configuration, a template can be created so that the Auto Configure mechanism can be used to quickly configure a robot of this type.
+ * The logic to detect a runaway op mode (both in the LinearOpMode and OpMode types) and to abort the run, then auto recover has been improved/implemented.
+ * Fix has been incorporated so that Logitech F310 gamepad mappings will be correct for Marshmallow users.
+
+**************************************************************************************
+
+Release 16.07.08
+
+ * For the ftc_app project, the gradle files have been modified to support Android Studio 2.1.x.
+
+
+
+**************************************************************************************
+
+Release 16.03.30
+
+ * For the MIT App Inventor, the design blocks have new icons that better represent the function of each design component.
+ * Some changes were made to the shutdown logic to ensure the robust shutdown of some of our USB services.
+ * A change was made to LinearOpMode so as to allow a given instance to be executed more than once, which is required for the App Inventor.
+ * Javadoc improved/updated.
+
+**************************************************************************************
+
+Release 16.03.09
+
+ * Changes made to make the FTC SDK synchronous (significant change!)
+    - waitOneFullHardwareCycle() and waitForNextHardwareCycle() are no longer needed and have been deprecated.
+    - runOpMode() (for a LinearOpMode) is now decoupled from the system's hardware read/write thread.
+    - loop() (for an OpMode) is now decoupled from the system's hardware read/write thread.
+    - Methods are synchronous.
+    - For example, if you call setMode(DcMotorController.RunMode.RESET_ENCODERS) for a motor, the encoder is guaranteed to be reset when the method call is complete.
+    - For legacy module (NXT compatible), user no longer has to toggle between read and write modes when reading from or writing to a legacy device.
+ * Changes made to enhance reliability/robustness during ESD event.
+ * Changes made to make code thread safe.
+ * Debug keystore added so that user-generated robot controller APKs will all use the same signed key (to avoid conflicts if a team has multiple developer laptops for example).
+ * Firmware version information for Modern Robotics modules are now logged.
+ * Changes made to improve USB comm reliability and robustness.
+ * Added support for voltage indicator for legacy (NXT-compatible) motor controllers.
+ * Changes made to provide auto stop capabilities for op modes.
+    - A LinearOpMode class will stop when the statements in runOpMode() are complete.  User does not have to push the stop button on the driver station.
+    - If an op mode is stopped by the driver station, but there is a run away/uninterruptible thread persisting, the app will log an error message then force itself to crash to stop the runaway thread.
+ * Driver Station UI modified to display lowest measured voltage below current voltage (12V battery).
+ * Driver Station UI modified to have color background for current voltage (green=good, yellow=caution, red=danger, extremely low voltage).
+ * javadoc improved (edits and additional classes).
+ * Added app build time to About activity for driver station and robot controller apps.
+ * Display local IP addresses on Driver Station About activity.
+ * Added I2cDeviceSynchImpl.
+ * Added I2cDeviceSync interface.
+ * Added seconds() and milliseconds() to ElapsedTime for clarity.
+ * Added getCallbackCount() to I2cDevice.
+ * Added missing clearI2cPortActionFlag.
+ * Added code to create log messages while waiting for LinearOpMode shutdown.
+ * Fix so Wifi Direct Config activity will no longer launch multiple times.
+ * Added the ability to specify an alternate i2c address in software for the Modern Robotics gyro.
+ 
+**************************************************************************************
+
+Release 16.02.09
+
+ * Improved battery checker feature so that voltage values get refreshed regularly (every 250 msec) on Driver Station (DS) user interface.
+ * Improved software so that Robot Controller (RC) is much more resilient and “self-healing” to USB disconnects:
+    - If user attempts to start/restart RC with one or more module missing, it will display a warning but still start up.
+    - When running an op mode, if one or more modules gets disconnected, the RC & DS will display warnings,and robot will keep on working in spite of the missing module(s).
+    - If a disconnected module gets physically reconnected the RC will auto detect the module and the user will regain control of the recently connected module.
+    - Warning messages are more helpful (identifies the type of module that’s missing plus its USB serial number).   
+ * Code changes to fix the null gamepad reference when users try to reference the gamepads in the init() portion of their op mode.
+ * NXT light sensor output is now properly scaled.  Note that teams might have to readjust their light threshold values in their op modes.
+ * On DS user interface, gamepad icon for a driver will disappear if the matching gamepad is disconnected or if that gamepad gets designated as a different driver.
+ * Robot Protocol (ROBOCOL) version number info is displayed in About screen on RC and DS apps.
+ * Incorporated a display filter on pairing screen to filter out devices that don’t use the “<TEAM NUMBER>-“ format. This filter can be turned off to show all WiFi Direct devices.
+ * Updated text in License file.
+ * Fixed formatting error in OpticalDistanceSensor.toString().
+ * Fixed issue on with a blank (“”) device name that would disrupt WiFi Direct Pairing.
+ * Made a change so that the WiFi info and battery info can be displayed more quickly on the DS upon connecting to RC.
+ * Improved javadoc generation.
+ * Modified code to make it easier to support language localization in the future.
 
 **************************************************************************************
 

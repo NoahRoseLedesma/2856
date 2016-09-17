@@ -1,17 +1,17 @@
 package org.swerverobotics.library.examples;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.swerverobotics.library.SynchronousOpMode;
-import org.swerverobotics.library.interfaces.Disabled;
-import org.swerverobotics.library.interfaces.TeleOp;
 
 /**
  * This is an example showing the use of servos.
  * It assumes that you have 3 servos connected to a Core Servo Controller
  * and that the servos are named "servo1", "servo2", and "servo3" in your robot configuration file.
  */
-@TeleOp(name="Servo demo", group="Swerve Examples")
+@TeleOp(name="Servo demo (Synch)", group="Swerve Examples")
 @Disabled
 public class SynchServoDemo extends SynchronousOpMode
 {

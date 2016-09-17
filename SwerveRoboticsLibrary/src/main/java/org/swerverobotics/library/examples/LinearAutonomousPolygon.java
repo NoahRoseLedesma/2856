@@ -1,5 +1,7 @@
 package org.swerverobotics.library.examples;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.*;
 import org.swerverobotics.library.*;
@@ -14,7 +16,7 @@ import org.swerverobotics.library.interfaces.*;
  * This OpMode expects two motors, named 'motorLeft' and 'motorRight' respectively. The
  * OpMode works with both legacy and modern motor controllers.
  */
-@Autonomous(name="Auto Polygon (Linear, Easy)", group="Swerve Examples")
+@Autonomous(name="Auto Polygon (Linear)", group="Swerve Examples")
 @Disabled
 public class LinearAutonomousPolygon extends LinearOpMode
     {
@@ -31,7 +33,6 @@ public class LinearAutonomousPolygon extends LinearOpMode
         motorLeft   = hardwareMap.dcMotor.get("motorLeft");
         motorRight  = hardwareMap.dcMotor.get("motorRight");
         motorLeft.setDirection(DcMotor.Direction.REVERSE);
-        ClassFactory.createEasyMotorController(this, motorLeft, motorRight);
 
         this.waitForStart();
 
