@@ -1,4 +1,4 @@
-package com.qualcomm.ftcrobotcontroller;
+package org.firstinspires.ftc.robotcontroller;
 
 import android.content.Context;
 import android.graphics.PixelFormat;

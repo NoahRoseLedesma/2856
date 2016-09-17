@@ -1,4 +1,4 @@
-package com.qualcomm.ftcrobotcontroller;
+package org.firstinspires.ftc.robotcontroller;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,6 +9,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
+
+import com.qualcomm.ftcrobotcontroller.R;
 
 import java.io.BufferedReader;
 import java.io.File;

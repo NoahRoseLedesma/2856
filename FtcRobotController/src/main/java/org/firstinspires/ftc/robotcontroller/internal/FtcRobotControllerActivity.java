@@ -58,7 +58,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
 import com.google.blocks.ftcrobotcontroller.BlocksActivity;
 import com.google.blocks.ftcrobotcontroller.ProgrammingModeActivity;
 import com.google.blocks.ftcrobotcontroller.ProgrammingModeControllerImpl;
@@ -80,7 +80,7 @@ import com.qualcomm.ftccommon.configuration.EditParameters;
 import com.qualcomm.ftccommon.configuration.FtcLoadFileActivity;
 import com.qualcomm.ftccommon.configuration.RobotConfigFile;
 import com.qualcomm.ftccommon.configuration.RobotConfigFileManager;
-import com.qualcomm.ftcrobotcontroller.CameraPreview;
+import org.firstinspires.ftc.robotcontroller.CameraPreview;
 import com.qualcomm.ftcrobotcontroller.R;
 import com.qualcomm.hardware.HardwareFactory;
 import com.qualcomm.robotcore.eventloop.EventLoopManager;
@@ -369,7 +369,7 @@ public class FtcRobotControllerActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    RobotLog.vv(TAG, "onCreate()");
+    RasobotLog.vv(TAG, "onCreate()");
 
     receivedUsbAttachmentNotifications = new ConcurrentLinkedQueue<UsbDevice>();
     eventLoop = null;
@@ -843,139 +843,4 @@ public class FtcRobotControllerActivity extends Activity {
     // Most of what's here is of necessity pretty obscure and technical in nature, but
     // fortunately those details won't be of significance to most.
 
-    static class SwerveEventLoopMonitorHook implements EventLoopManager.EventLoopMonitor
-    // Hook to receive event monitor state transition
-        {
-        //------------------------------------------------------------------------------------------
-        // State
-        //------------------------------------------------------------------------------------------
-
-        // The previously installed hook
-        final EventLoopManager.EventLoopMonitor prevMonitor;
-
-        // The activity in which we live
-        final FtcRobotControllerActivity activity;
-
-        //------------------------------------------------------------------------------------------
-        // Construction
-        //------------------------------------------------------------------------------------------
-
-        SwerveEventLoopMonitorHook(EventLoopManager.EventLoopMonitor prevMonitor, FtcRobotControllerActivity activity)
-            {
-            this.prevMonitor = prevMonitor;
-            this.activity    = activity;
-            }
-
-        // Make sure we're installed in the in the hook of the current event loop
-        public synchronized static void installIfNecessary(FtcRobotControllerService service, FtcRobotControllerActivity activity)
-            {
-            if (service == null)
-                return;
-
-            Robot robot = service.getRobot();
-            if (robot == null)
-                return;
-
-            EventLoopManager eventLoopManager = robot.eventLoopManager;
-            if (eventLoopManager == null)
-                return;
-
-            // Ok, the EventLoopManager is up and running. Install our hooks if we haven't already done so
-
-            EventLoopManager.EventLoopMonitor monitor = eventLoopManager.getMonitor();
-            if (monitor != null)
-                {
-                if (monitor instanceof SwerveEventLoopMonitorHook)
-                    {
-                    // we're already installed
-                    }
-                else
-                    {
-                    SwerveEventLoopMonitorHook newMonitor = new SwerveEventLoopMonitorHook(monitor, activity);
-                    eventLoopManager.setMonitor(newMonitor);
-                    Log.v(SynchronousOpMode.LOGGING_TAG, "installed SwerveEventLoopMonitorHook");
-                    }
-                }
-            }
-
-        //------------------------------------------------------------------------------------------
-        // Notifications
-        //------------------------------------------------------------------------------------------
-
-        @Override
-        public void onStateChange(RobotState newState)
-            {
-            this.prevMonitor.onStateChange(newState);
-            RobotStateTransitionNotifier.onRobotStateChange(newState);
-            }
-
-        @Override public void onTelemetryTransmitted()
-            {
-            this.prevMonitor.onTelemetryTransmitted();
-            }
-
-        @Override public void onPeerConnected(boolean peerLikelyChanged)
-            {
-            this.prevMonitor.onPeerConnected(peerLikelyChanged);
-            }
-
-        @Override public void onPeerDisconnected()
-            {
-            this.prevMonitor.onPeerDisconnected();
-            }
-        }
-
-    class SwerveUpdateUIHook extends UpdateUI
-    // Hook used to augment the user interface
-        {
-        //------------------------------------------------------------------------------------------
-        // State
-        //------------------------------------------------------------------------------------------
-
-        FtcRobotControllerActivity activity;
-        FtcRobotControllerService  controllerService;
-
-        //------------------------------------------------------------------------------------------
-        // Construction
-        //------------------------------------------------------------------------------------------
-
-        SwerveUpdateUIHook(FtcRobotControllerActivity activity, Dimmer dimmer)
-            {
-            super(activity, dimmer);
-            this.activity = activity;
-            this.controllerService = null;
-            }
-
-        @Override
-        public void setControllerService(FtcRobotControllerService controllerService)
-            {
-            super.setControllerService(controllerService);
-            this.controllerService = controllerService;
-            }
-
-        //------------------------------------------------------------------------------------------
-        // Operations
-        //------------------------------------------------------------------------------------------
-
-        class CallbackHook extends UpdateUI.Callback
-            {
-            //--------------------------------------------------------------------------------------
-            // Operations
-            //--------------------------------------------------------------------------------------
-
-            @Override
-            public void updateRobotStatus(final RobotStatus status)
-                // Called from FtcRobotControllerService.reportRobotStatus(). That is called from many
-                // places, but in particular it is called *immediately* after RobotFactory.createRobot()
-                // is called in FtcRobotControllerService.run(); that ensures we get to see the raw
-                // initial state.
-                {
-                // Make sure we get to see all the robot state transitions
-                SwerveEventLoopMonitorHook.installIfNecessary(controllerService, FtcRobotControllerActivity.this);
-
-                super.updateRobotStatus(status);
-                RobotStateTransitionNotifier.onRobotUpdate(status);
-                }
-            }
-        }
 }
